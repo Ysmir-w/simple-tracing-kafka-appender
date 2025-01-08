@@ -10,7 +10,7 @@ pub struct SimpleKafkaAppender {
 }
 pub struct KafkaWriter<'a> {
     producer: &'a BaseProducer,
-    topic: String,
+    topic: &'a str,
 }
 
 impl SimpleKafkaAppender {
@@ -30,7 +30,7 @@ impl Write for SimpleKafkaAppender {
 
 impl Write for KafkaWriter<'_> {
     fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
-        let payload = BaseRecord::to(&self.topic).key(&()).payload(buf);
+        let payload = BaseRecord::to(self.topic).key(&()).payload(buf);
         match self.producer.send(payload) {
             Ok(_) => {
                 if let Err(e) = self.producer.flush(Duration::from_millis(1000)){
@@ -61,7 +61,7 @@ impl<'a> MakeWriter<'a> for SimpleKafkaAppender {
     fn make_writer(&'a self) -> Self::Writer {
         KafkaWriter {
             producer: &self.producer,
-            topic: self.topic.clone(),
+            topic: &self.topic,
         }
     }
 }
