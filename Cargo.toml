@@ -1,5 +1,5 @@
 [package]
-name = "demo"
+name = "simple-tracing-kafka-appender"
 version = "0.1.0"
 edition = "2021"
 
